@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.5
 # -*- coding: utf-8 -*-
 import sys
+import random
 
 import pandas as pd
 from pandas.tools.plotting import scatter_matrix
@@ -9,48 +10,91 @@ import matplotlib.pyplot as plt
 ref_info = ['first', 'second', 'third', 'forth', 'fifth', 'sixth']
 
 
+def get_random_value(natta_submit, result):
+    random.shuffle(result)
+    if (result[0] in natta_submit):
+        return -1
+    else:
+        natta_submit.append(result[0])
+        return 0
+
+
 class Natta:
     def __init__(self):
         self.data = pd.read_csv(
                 '../_natta.csv', header=None, index_col=0, names=ref_info)
-        pd.set_option('display.max_rows', 999)
         self.total = len(self.data.index)
 
-    def check_last_week(self):
-
-        # print(self.data.columns)
-        # print(len(self.data.index))
-        # print(self.data.eval)
-        # print(self.data.get_value(1, ref_info[0]))
-
-        this_week_num = []
+        self.this_week_num = []
         num1 = self.data.get_value(self.total, ref_info[0])
         num2 = self.data.get_value(self.total, ref_info[1])
         num3 = self.data.get_value(self.total, ref_info[2])
         num4 = self.data.get_value(self.total, ref_info[3])
         num5 = self.data.get_value(self.total, ref_info[4])
         num6 = self.data.get_value(self.total, ref_info[5])
-        this_week_num.append(num1)
-        this_week_num.append(num2)
-        this_week_num.append(num3)
-        this_week_num.append(num4)
-        this_week_num.append(num5)
-        this_week_num.append(num6)
+        self.this_week_num.append(num1)
+        self.this_week_num.append(num2)
+        self.this_week_num.append(num3)
+        self.this_week_num.append(num4)
+        self.this_week_num.append(num5)
+        self.this_week_num.append(num6)
+        print('this: ', self.this_week_num, '\n\n')
 
-        next_max = {}
-
+    def check_past_week(self):
+        # print(self.data.columns)
+        # print(len(self.data.index))
+        # print(self.data.eval)
+        # print(self.data.get_value(1, ref_info[0]))
+        last_max = {}
+        natta_submit = []
         for i in range(len(ref_info)):  # 1 ~ 6 each
-            next_max.clear()
+            last_max.clear()
             for j in range(2, self.total):
                 past_week_num = self.data.get_value(j, ref_info[i])
-                if (past_week_num == this_week_num[i]):
+                if (past_week_num == self.this_week_num[i]):
                     last_week_num = self.data.get_value(j-1, ref_info[i])
-                    cnt = next_max.get(last_week_num)
+                    cnt = last_max.get(last_week_num)
                     if cnt is None:
                         cnt = 0
-                    next_max[last_week_num] = cnt + 1
-            sort_result = sorted(next_max.items(), key=lambda x: x[1])
-            print([i], sort_result[-3:])
+                    last_max[last_week_num] = cnt + 1
+            sort_result = sorted(
+                    last_max.items(), key=lambda x: x[1], reverse=True)
+
+            result = []
+            for j in range(0, 4):
+                result.append(sort_result[j][0])
+
+            while True:
+                ret = get_random_value(natta_submit, result)
+                if (ret == 0):
+                    break
+        print('past: ', natta_submit)
+
+    def check_next_week(self):
+        next_max = {}
+        natta_submit = []
+        for i in range(len(ref_info)):  # 1 ~ 6 each
+            next_max.clear()
+            for j in range(1, self.total-1):
+                past_week_num = self.data.get_value(j, ref_info[i])
+                if (past_week_num == self.this_week_num[i]):
+                    next_week_num = self.data.get_value(j+1, ref_info[i])
+                    cnt = next_max.get(next_week_num)
+                    if cnt is None:
+                        cnt = 0
+                    next_max[next_week_num] = cnt + 1
+            sort_result = sorted(
+                    next_max.items(), key=lambda x: x[1], reverse=True)
+            # print([i], sort_result[-3:])
+            result = []
+            for j in range(0, 4):
+                result.append(sort_result[j][0])
+
+            while True:
+                ret = get_random_value(natta_submit, result)
+                if (ret == 0):
+                    break
+        print('next: ', natta_submit)
 
     def frequency(self, idx=None):
         if idx is None:
@@ -116,7 +160,8 @@ class Natta:
 if __name__ == '__main__':
     natta = Natta()
 
-    natta.check_last_week()
+    natta.check_past_week()
+    natta.check_next_week()
     # natta.frequency(1)
     # self.frequency()
     # self.describe()
