@@ -14,17 +14,50 @@ class Natta:
         self.data = pd.read_csv(
                 '../_natta.csv', header=None, index_col=0, names=ref_info)
         pd.set_option('display.max_rows', 999)
-        # self.frequency()
-        # self.describe()
-        # self.boxplot()
-        # self.histogram()
-        # self.realtionships_with_feature()
-        # natta.compare_count_and_rank(7)
-        self.test()
+        self.total = len(self.data.index)
 
-    def frequency(self):
+    def check_last_week(self):
+
+        # print(self.data.columns)
+        # print(len(self.data.index))
+        # print(self.data.eval)
+        # print(self.data.get_value(1, ref_info[0]))
+
+        this_week_num = []
+        num1 = self.data.get_value(self.total, ref_info[0])
+        num2 = self.data.get_value(self.total, ref_info[1])
+        num3 = self.data.get_value(self.total, ref_info[2])
+        num4 = self.data.get_value(self.total, ref_info[3])
+        num5 = self.data.get_value(self.total, ref_info[4])
+        num6 = self.data.get_value(self.total, ref_info[5])
+        this_week_num.append(num1)
+        this_week_num.append(num2)
+        this_week_num.append(num3)
+        this_week_num.append(num4)
+        this_week_num.append(num5)
+        this_week_num.append(num6)
+
+        next_max = {}
+
         for i in range(len(ref_info)):  # 1 ~ 6 each
-            print(self.data.groupby(ref_info[i]).count())
+            next_max.clear()
+            for j in range(2, self.total):
+                past_week_num = self.data.get_value(j, ref_info[i])
+                if (past_week_num == this_week_num[i]):
+                    last_week_num = self.data.get_value(j-1, ref_info[i])
+                    cnt = next_max.get(last_week_num)
+                    if cnt is None:
+                        cnt = 0
+                    next_max[last_week_num] = cnt + 1
+            sort_result = sorted(next_max.items(), key=lambda x: x[1])
+            print([i], sort_result[-3:])
+
+    def frequency(self, idx=None):
+        if idx is None:
+            for i in range(len(ref_info)):  # 1 ~ 6 each
+                print(self.data.groupby(ref_info[i]).count())
+        else:
+            print(self.data.groupby(ref_info[idx-1]).count())
 
     def describe(self):
         ''' mean : 평균
@@ -82,4 +115,14 @@ class Natta:
 
 if __name__ == '__main__':
     natta = Natta()
+
+    natta.check_last_week()
+    # natta.frequency(1)
+    # self.frequency()
+    # self.describe()
+    # self.boxplot()
+    # self.histogram()
+    # self.realtionships_with_feature()
+    # natta.compare_count_and_rank(7)
+    # self.test()
     sys.exit(0)
