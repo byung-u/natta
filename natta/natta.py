@@ -20,7 +20,7 @@ def get_random_value(natta_submit, result):
 
 
 class Natta:
-    def __init__(self):
+    def __init__(self, flag=1):
         self.data = pd.read_csv(
                 '../_natta.csv', header=None, index_col=0, names=ref_info)
         self.total = len(self.data.index)
@@ -38,7 +38,8 @@ class Natta:
         self.this_week_num.append(num4)
         self.this_week_num.append(num5)
         self.this_week_num.append(num6)
-        print('this: ', self.this_week_num, '\n\n')
+        if flag == 1:
+            print('this: ', self.this_week_num, '\n\n')
 
     def check_past_week(self):
         # print(self.data.columns)
