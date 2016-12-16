@@ -12,6 +12,29 @@ class Test(Natta):
     def __init__(self):
         Natta.__init__(self)
 
+    def compare_lucky_with_nattaresult(self, lucky_num, compare_num):
+        cnt = 0
+        for i in range(MAX_NUM_RANGE):
+            if (lucky_num[i] in compare_num):
+                cnt += 1
+        return cnt
+
+    def past_case_test(self, i, lucky_num):
+        by_past = self.check_by_past_week(lucky_num)
+        ret = self.compare_lucky_with_nattaresult(lucky_num, by_past)
+        if ret > 2:
+            print([i], 'past matched: ', ret, lucky_num, by_past)
+            return 1
+        return 0
+
+    def next_case_test(self, i, lucky_num):
+        by_next = self.check_by_next_week(lucky_num)
+        ret = self.compare_lucky_with_nattaresult(lucky_num, by_next)
+        if ret > 2:
+            print([i], 'next matched: ', ret, lucky_num, by_next)
+            return 1
+        return 0
+
     def check_all(self, start=100):
         lucky_num = []
         result_cnt = 0
@@ -20,17 +43,8 @@ class Test(Natta):
             for j in range(MAX_NUM_RANGE):
                 lucky_num.append(self.data.get_value(i, ref_info[j]))
 
-            by_past = self.check_by_past_week(lucky_num)
-            ret = self.compare_lucky_with_nattaresult(lucky_num, by_past)
-            if ret > 2:
-                print([i], 'past matched: ', ret, lucky_num, by_past)
-                result_cnt += 1
-
-            by_next = self.check_by_next_week(lucky_num)
-            ret = self.compare_lucky_with_nattaresult(lucky_num, by_next)
-            if ret > 2:
-                print([i], 'next matched: ', ret, lucky_num, by_next)
-                result_cnt += 1
+            result_cnt += self.past_case_test(i, lucky_num)
+            result_cnt += self.next_case_test(i, lucky_num)
 
         if result_cnt == 0:
             result_msg = 'Result: 0/%d 0%%' % (self.total - start)
@@ -39,13 +53,6 @@ class Test(Natta):
                     result_cnt, self.total - start,
                     result_cnt * 100 / (self.total - start))
         print(result_msg)
-
-    def compare_lucky_with_nattaresult(self, lucky_num, compare_num):
-        cnt = 0
-        for i in range(MAX_NUM_RANGE):
-            if (lucky_num[i] in compare_num):
-                cnt += 1
-        return cnt
 
 if __name__ == '__main__':
     test = Test()
@@ -59,8 +66,10 @@ if __name__ == '__main__':
         else:
             print('Use default 730, input value is not decimal')
             input_num = 730
-
-        test.check_all(input_num)
     else:
-        test.check_all()
+        # default
+        input_num = 100
+
+    test.check_all(input_num)
+
     sys.exit(0)
