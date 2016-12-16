@@ -25,7 +25,7 @@ def get_random_value(natta_submit, result):
 
 
 class Natta:
-    def __init__(self, flag=1):
+    def __init__(self, flag=0):
         self.data = pd.read_csv(
                 '../_natta.csv', header=None, index_col=0, names=ref_info)
         self.total = len(self.data.index)
@@ -38,7 +38,7 @@ class Natta:
         if flag == 1:
             print('this: ', self.this_week_num, '\n\n')
 
-    def check_by_past_week(self, lucky_num=None):
+    def check_by_past_week(self, lucky_num=None, week=1):
         # print(self.data.columns)
         # print(len(self.data.index))
         # print(self.data.eval)
@@ -54,7 +54,9 @@ class Natta:
             for j in range(2, self.total):
                 past_week_num = self.data.get_value(j, ref_info[i])
                 if (past_week_num == lucky_num[i]):
-                    last_week_num = self.data.get_value(j-1, ref_info[i])
+                    if (j - week <= 0):
+                        continue
+                    last_week_num = self.data.get_value(j-week, ref_info[i])
                     cnt = last_max.get(last_week_num)
                     if cnt is None:
                         cnt = 0
@@ -76,7 +78,7 @@ class Natta:
                     break
         return natta_submit
 
-    def check_by_next_week(self, lucky_num=None):
+    def check_by_next_week(self, lucky_num=None, week=1):
         if (lucky_num is None or len(lucky_num) == 0):
             lucky_num = self.this_week_num
 
@@ -88,7 +90,7 @@ class Natta:
             for j in range(1, self.total-1):
                 past_week_num = self.data.get_value(j, ref_info[i])
                 if (past_week_num == lucky_num[i]):
-                    next_week_num = self.data.get_value(j+1, ref_info[i])
+                    next_week_num = self.data.get_value(j+week, ref_info[i])
                     cnt = next_max.get(next_week_num)
                     if cnt is None:
                         cnt = 0
@@ -173,7 +175,7 @@ class Natta:
 
 
 if __name__ == '__main__':
-    natta = Natta()
+    natta = Natta(1)
 
     print('by past :', natta.check_by_past_week())
     print('by next :', natta.check_by_next_week())
