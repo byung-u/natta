@@ -7,10 +7,15 @@ import pandas as pd
 from pandas.tools.plotting import scatter_matrix
 import matplotlib.pyplot as plt
 
+MAX_SORT_RANGE = 4
 ref_info = ['first', 'second', 'third', 'forth', 'fifth', 'sixth']
 
 
 def get_random_value(natta_submit, result):
+    if len(result) == 1:
+        natta_submit.append(result[0])
+        return 0
+
     random.shuffle(result)
     if (result[0] in natta_submit):
         return -1
@@ -26,23 +31,20 @@ class Natta:
         self.total = len(self.data.index)
 
         self.this_week_num = []
-        num1 = self.data.get_value(self.total, ref_info[0])
-        num2 = self.data.get_value(self.total, ref_info[1])
-        num3 = self.data.get_value(self.total, ref_info[2])
-        num4 = self.data.get_value(self.total, ref_info[3])
-        num5 = self.data.get_value(self.total, ref_info[4])
-        num6 = self.data.get_value(self.total, ref_info[5])
-        self.this_week_num = (num1, num2, num3, num4, num5,num6)
+        for i in range(6):
+            self.this_week_num.append(
+                    self.data.get_value(self.total, ref_info[i]))
+
         if flag == 1:
             print('this: ', self.this_week_num, '\n\n')
 
-    def check_past_week(self, lucky_num=None):
+    def check_by_past_week(self, lucky_num=None):
         # print(self.data.columns)
         # print(len(self.data.index))
         # print(self.data.eval)
         # print(self.data.get_value(1, ref_info[0]))
 
-        if (lucky_num is None):
+        if (lucky_num is None or len(lucky_num) == 0):
             lucky_num = self.this_week_num
 
         last_max = {}
@@ -61,18 +63,23 @@ class Natta:
                     last_max.items(), key=lambda x: x[1], reverse=True)
 
             result = []
-            for j in range(0, 4):
+            max_range = len(sort_result)
+            if max_range > MAX_SORT_RANGE:
+                max_range = MAX_SORT_RANGE
+
+            for j in range(max_range):
                 result.append(sort_result[j][0])
 
             while True:
                 ret = get_random_value(natta_submit, result)
                 if (ret == 0):
                     break
-        print('past: ', natta_submit)
+        return natta_submit
 
-    def check_next_week(self, lucky_num=None):
-        if (lucky_num is None):
+    def check_by_next_week(self, lucky_num=None):
+        if (lucky_num is None or len(lucky_num) == 0):
             lucky_num = self.this_week_num
+
 
         next_max = {}
         natta_submit = []
@@ -90,15 +97,20 @@ class Natta:
                     next_max.items(), key=lambda x: x[1], reverse=True)
             # print([i], sort_result[-3:])
             result = []
-            for j in range(0, 4):
+            max_range = len(sort_result)
+            if max_range > MAX_SORT_RANGE:
+                max_range = MAX_SORT_RANGE
+
+            for j in range(max_range):
                 result.append(sort_result[j][0])
 
             while True:
                 ret = get_random_value(natta_submit, result)
                 if (ret == 0):
                     break
-        print('next: ', natta_submit)
+        return natta_submit
 
+    # Below functions are just pasdas test.
     def frequency(self, idx=None):
         if idx is None:
             for i in range(len(ref_info)):  # 1 ~ 6 each
@@ -163,8 +175,8 @@ class Natta:
 if __name__ == '__main__':
     natta = Natta()
 
-    natta.check_past_week()
-    natta.check_next_week()
+    print('by past :', natta.check_by_past_week())
+    print('by next :', natta.check_by_next_week())
     # natta.frequency(1)
     # self.frequency()
     # self.describe()
