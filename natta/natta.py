@@ -32,12 +32,7 @@ class Natta:
         num4 = self.data.get_value(self.total, ref_info[3])
         num5 = self.data.get_value(self.total, ref_info[4])
         num6 = self.data.get_value(self.total, ref_info[5])
-        self.this_week_num.append(num1)
-        self.this_week_num.append(num2)
-        self.this_week_num.append(num3)
-        self.this_week_num.append(num4)
-        self.this_week_num.append(num5)
-        self.this_week_num.append(num6)
+        self.this_week_num = (num1, num2, num3, num4, num5,num6)
         if flag == 1:
             print('this: ', self.this_week_num, '\n\n')
 
