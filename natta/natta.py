@@ -82,12 +82,13 @@ class Natta:
         if (lucky_num is None or len(lucky_num) == 0):
             lucky_num = self.this_week_num
 
-
         next_max = {}
         natta_submit = []
         for i in range(len(ref_info)):  # 1 ~ 6 each
             next_max.clear()
             for j in range(1, self.total-1):
+                if (j+week >= self.total-1):
+                    continue
                 past_week_num = self.data.get_value(j, ref_info[i])
                 if (past_week_num == lucky_num[i]):
                     next_week_num = self.data.get_value(j+week, ref_info[i])
