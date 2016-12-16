@@ -36,18 +36,22 @@ class Natta:
         if flag == 1:
             print('this: ', self.this_week_num, '\n\n')
 
-    def check_past_week(self):
+    def check_past_week(self, lucky_num=None):
         # print(self.data.columns)
         # print(len(self.data.index))
         # print(self.data.eval)
         # print(self.data.get_value(1, ref_info[0]))
+
+        if (lucky_num is None):
+            lucky_num = self.this_week_num
+
         last_max = {}
         natta_submit = []
         for i in range(len(ref_info)):  # 1 ~ 6 each
             last_max.clear()
             for j in range(2, self.total):
                 past_week_num = self.data.get_value(j, ref_info[i])
-                if (past_week_num == self.this_week_num[i]):
+                if (past_week_num == lucky_num[i]):
                     last_week_num = self.data.get_value(j-1, ref_info[i])
                     cnt = last_max.get(last_week_num)
                     if cnt is None:
@@ -66,14 +70,17 @@ class Natta:
                     break
         print('past: ', natta_submit)
 
-    def check_next_week(self):
+    def check_next_week(self, lucky_num=None):
+        if (lucky_num is None):
+            lucky_num = self.this_week_num
+
         next_max = {}
         natta_submit = []
         for i in range(len(ref_info)):  # 1 ~ 6 each
             next_max.clear()
             for j in range(1, self.total-1):
                 past_week_num = self.data.get_value(j, ref_info[i])
-                if (past_week_num == self.this_week_num[i]):
+                if (past_week_num == lucky_num[i]):
                     next_week_num = self.data.get_value(j+1, ref_info[i])
                     cnt = next_max.get(next_week_num)
                     if cnt is None:
